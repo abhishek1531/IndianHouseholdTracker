@@ -1,6 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import {
+  useState,
+  useContext,
+} from "react";
+
 import InputField from "../components/InputField";
+
 import toast from "react-hot-toast";
+
+import {
+  ExpenseContext,
+} from "../context/ExpenseContext";
 
 function Expenses() {
 
@@ -8,37 +17,10 @@ function Expenses() {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
 
-  const [expenses, setExpenses] = useState([]);
-  const isFirstRender = useRef(true);
-
-  // Load data from localStorage
-
-  useEffect(() => {
-
-    const savedExpenses =
-      localStorage.getItem("expenses");
-
-    if (savedExpenses) {
-      setExpenses(JSON.parse(savedExpenses));
-    }
-
-  }, []);
-
-  // Save data to localStorage
-
-  useEffect(() => {
-
-  if (isFirstRender.current) {
-    isFirstRender.current = false;
-    return;
-  }
-
-  localStorage.setItem(
-    "expenses",
-    JSON.stringify(expenses)
-  );
-
-}, [expenses]);
+  const {
+    expenses,
+    setExpenses,
+  } = useContext(ExpenseContext);
 
   function handleExpense(e) {
     e.preventDefault();
@@ -55,7 +37,10 @@ function Expenses() {
       category,
     };
 
-    setExpenses((prev) => [...prev, expenseData]);
+    setExpenses((prev) => [
+      ...prev,
+      expenseData,
+    ]);
 
     toast.success("Expense Added");
 
@@ -67,7 +52,9 @@ function Expenses() {
   function handleDelete(id) {
 
     const updatedExpenses =
-      expenses.filter((item) => item.id !== id);
+      expenses.filter(
+        (item) => item.id !== id
+      );
 
     setExpenses(updatedExpenses);
 
@@ -94,19 +81,27 @@ function Expenses() {
             type="text"
             placeholder="Expense Title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) =>
+              setTitle(e.target.value)
+            }
           />
 
           <InputField
             type="number"
             placeholder="Amount"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={(e) =>
+              setAmount(e.target.value)
+            }
           />
+
+          {/* Category Select */}
 
           <select
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) =>
+              setCategory(e.target.value)
+            }
             className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 outline-none focus:border-green-400"
           >
 
@@ -177,7 +172,9 @@ function Expenses() {
                 </p>
 
                 <button
-                  onClick={() => handleDelete(item.id)}
+                  onClick={() =>
+                    handleDelete(item.id)
+                  }
                   className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition"
                 >
                   Delete
